@@ -103,7 +103,7 @@ Each capability is a governed workflow, not a one-line feature.
 | Feature AutoDev | Generate binding stubs -> compile -> run tests/interactions -> repair or admit. |
 | Audit And Repair | Track input hashes, manual overrides, diffs, repairs, waivers, rollback data, and final admission. |
 
-Detailed per-feature flows are documented in [docs/feature-workflows.md](docs/feature-workflows.md).
+Detailed capability flows are consolidated in [docs/architecture-and-workflow.md](docs/architecture-and-workflow.md).
 
 ## Example Run Shape
 
@@ -168,8 +168,7 @@ Hermes execution:
 
 ## Repository Documents
 
-- [docs/architecture-and-workflow.md](docs/architecture-and-workflow.md): complete architecture, module contracts, governance model, and roadmap.
-- [docs/feature-workflows.md](docs/feature-workflows.md): per-feature workflow cards with inputs, steps, outputs, gates, and failure routing.
+- [docs/architecture-and-workflow.md](docs/architecture-and-workflow.md): complete architecture, capability workflow cards, module contracts, governance model, and roadmap.
 
 ## Implementation Roadmap
 
