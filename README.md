@@ -1,30 +1,24 @@
 # Hermes Unity UI AutoDev Skill
 
-## Project Status
+`Hermes Unity UI AutoDev Skill` is a governed Unity UI automation skill for turning game UI references, component assets, and feature intent into verified Unity Prefabs, feature-binding code, validation evidence, and audit records.
 
-This repository is the project-level architecture document for `Hermes Unity UI AutoDev Skill`.
+Current status: `architecture-design / pre-live-implementation`
 
-Current status: `architecture-design / pre-live-implementation`.
+This repository defines the target child-skill architecture. It does not claim that `aegisfabric pipeline v1.2` is already repaired, stable, or live-ready.
 
-This document does not claim that `aegisfabric pipeline v1.2` is already repaired, stable, or live-ready. The intended sequence is:
+## Why This Exists
 
-```text
-repair current v1.2
--> sync repaired behavior back into the v1.2 blueprint
--> generate a fresh v1.2 live version
--> use v1.2 live as the governed skill factory
--> derive Hermes Unity UI AutoDev Skill as a child skill
-```
+Game UI implementation often breaks down at the handoff between design, planning, and Unity:
 
-## One-Line Definition
+| Problem | Hermes Answer |
+| --- | --- |
+| A full-screen UI image shows the target look but not the component semantics. | Build a Canonical UI IR that joins visual nodes, assets, layout, and blueprint function meaning. |
+| UI assets are named loosely, for example `icon_*`, `button_*`, `panel_*`. | Normalize names into an audited asset manifest before reconstruction. |
+| Planning gives a feature document instead of a strict blueprint. | Compile the document into a candidate blueprint, then admit it through governance gates. |
+| LLMs can write files directly and bypass process. | Keep the LLM as task organizer; Hermes is the governed executor and admission authority. |
+| A generated Prefab can look close but still be wrong. | Capture Unity screenshots, RectTransform probes, visual diffs, tests, and audit evidence. |
 
-`Hermes Unity UI AutoDev Skill` turns a game UI reference image, UI asset library, and feature document or blueprint into a governed Unity Prefab, generated feature-binding code, validation evidence, audit records, and repair/admission verdicts.
-
-## Core Positioning
-
-This skill is not a loose LLM prompt and not a direct "PNG to Prefab" script.
-
-It is a governed execution skill:
+## Core Principle
 
 ```text
 LLM = task driver / intent organizer
@@ -33,118 +27,174 @@ Unity project = mutation target
 governance kernel = admission authority
 ```
 
-The LLM may organize the task, explain ambiguity, and prepare candidate intent. It must not directly mutate Unity files, rename assets, generate final Prefabs, repair source files, or admit completion. Those actions belong to the Hermes skill execution flow.
+The LLM may summarize requirements, prepare task packets, and explain evidence. It must not directly mutate Unity files, rename assets, generate final Prefabs, repair code, or admit completion. Those actions must pass through the Hermes skill workflow.
 
-## Main Problems Solved
+## v1.2 Derivation Sequence
 
-1. Convert non-standard feature documents into admitted UI feature blueprints.
-2. Normalize imperfect UI asset names such as `icon_*`, `button_*`, `panel_*`, and `bg_*`.
-3. Reconstruct a Unity UI Prefab from a full-screen reference PNG and prepared component PNG assets.
-4. Determine which UI component carries which blueprint function.
-5. Generate Unity UI hierarchy, RectTransform layout, component bindings, Controller/ViewModel stubs, and event hookups.
-6. Validate visual reconstruction by screenshot comparison against the reference image.
-7. Validate runtime behavior through Unity compilation, EditMode/PlayMode tests, interaction probes, and Console error scans.
-8. Preserve audit trails for low-confidence matches, manual overrides, delta patches, repair loops, and final admission.
+This skill is intended to be derived after the Hermes mother skill is repaired and regenerated:
 
-## Architecture Summary
+```text
+repair current aegisfabric pipeline v1.2
+-> sync repaired behavior back into the v1.2 blueprint
+-> generate a fresh v1.2 live executor
+-> use v1.2 live as the governed skill factory
+-> derive Hermes Unity UI AutoDev Skill as a Unity child skill
+```
+
+`v1.2 live` should remain a generic governed executor and skill factory. `Hermes Unity UI AutoDev Skill` is the Unity-specific child skill.
+
+## Capability Map
+
+| Capability | What It Does | Main Output | Gate |
+| --- | --- | --- | --- |
+| Document-to-Blueprint | Converts planning docs into candidate screen blueprints. | `admitted-screen-blueprint.json` | blueprint admission gate |
+| Asset Name Governance | Normalizes imperfect UI asset names into structured asset truth. | `asset-manifest.json` | asset manifest gate |
+| UI Perception | Detects nodes, text, layout candidates, hierarchy, and component candidates from full PNG references. | `perception-report.json` | perception confidence gate |
+| Semantic Binding | Resolves what function each visual component carries. | `semantic-binding-report.json` | semantic binding gate |
+| Canonical UI IR | Joins visual, asset, semantic, layout, state, and Unity projection truth. | `canonical-ui-ir.json` | UI IR schema gate |
+| Prefab Patch Planning | Plans create/update/delete operations before Unity mutation. | `prefab-patch-plan.json` | prefab patch plan gate |
+| Unity Prefab Build | Builds or patches Canvas/Prefab through Unity Editor scripts. | Unity Prefab + patch receipt | Unity adapter gate |
+| Visual Verification | Compares generated Unity screenshot against the reference PNG. | `visual-diff-report.json` | visual diff gate |
+| Feature AutoDev | Generates Controller/ViewModel/event/state/data-binding stubs from admitted blueprint. | generated C# manifest | compile and interaction gates |
+| Audit And Delta Sync | Preserves manual edits, ambiguity ledgers, patch records, and admission evidence. | `admission-report.md` | admission gate |
+
+## Workflow Overview
 
 ```mermaid
 flowchart TD
-    A["User request / feature document"] --> B["LLM task organizer"]
-    B --> C["Hermes intake gate"]
-    C --> D["Doc-to-blueprint compiler"]
-    D --> E["Admitted screen blueprint"]
+    A["Feature document or blueprint"] --> B["Document-to-blueprint compiler"]
+    B --> C["Admitted screen blueprint"]
 
-    F["Full UI reference PNG"] --> G["UI perception engine"]
-    H["Named component PNG assets"] --> I["Asset name canonicalizer"]
-    I --> J["Asset manifest"]
+    D["Full UI reference PNG"] --> E["UI perception"]
+    F["Component PNG assets"] --> G["Asset name governance"]
+    G --> H["Asset manifest"]
 
-    E --> K["Semantic binding resolver"]
-    G --> K
-    J --> K
+    C --> I["Semantic binding resolver"]
+    E --> I
+    H --> I
 
-    K --> L["Canonical UI IR"]
-    L --> M["Prefab patch plan"]
-    M --> N["Unity Prefab builder"]
-    N --> O["Unity screenshot/layout probe"]
-    O --> P["Visual diff gate"]
+    I --> J["Canonical UI IR"]
+    J --> K["Prefab patch plan"]
+    K --> L["Unity Prefab builder"]
+    L --> M["Screenshot + RectTransform probe"]
+    M --> N["Visual diff gate"]
 
-    P -->|pass| Q["Feature AutoDev"]
-    P -->|fail| R["Governed repair loop"]
-    R --> L
+    N -->|pass| O["Feature AutoDev"]
+    N -->|fail| P["Governed repair loop"]
+    P --> J
 
-    Q --> S["Compile/test/interaction gates"]
-    S -->|pass| T["Audit and admission"]
-    S -->|fail| R
+    O --> Q["Unity compile + tests + interaction probes"]
+    Q -->|pass| R["Audit + admission"]
+    Q -->|fail| P
 ```
 
-## Main Workflow
+## Feature Workflows
+
+Each capability is a governed workflow, not a one-line feature.
+
+| Feature | Workflow Summary |
+| --- | --- |
+| Document-to-Blueprint | Intake document -> extract screens/functions/states/events -> emit candidate blueprint -> validate coverage -> admit or block. |
+| Asset Name Governance | Scan assets -> parse prefixes/tokens -> infer category/state/role -> detect ambiguity -> emit manifest and rename plan. |
+| UI Perception | Read full reference PNG -> detect nodes/OCR/layout/layers -> score visual candidates -> emit perception report. |
+| Semantic Binding | Join blueprint functions + asset manifest + perception nodes -> score evidence -> bind or route to ambiguity ledger. |
+| UI Reconstruction | Compile UI IR -> create patch plan -> build Prefab through Unity Editor scripts -> capture receipt. |
+| Visual Verification | Open generated screen -> capture screenshot/probe -> compare to reference -> repair or pass. |
+| Feature AutoDev | Generate binding stubs -> compile -> run tests/interactions -> repair or admit. |
+| Audit And Repair | Track input hashes, manual overrides, diffs, repairs, waivers, rollback data, and final admission. |
+
+Detailed per-feature flows are documented in [docs/feature-workflows.md](docs/feature-workflows.md).
+
+## Example Run Shape
 
 ```text
-1. Intake
-   Feature document or blueprint, full-screen UI PNG, component PNG folder,
-   naming rules, Unity project path, target screen id.
+input/
+|- reward_screen.png
+|- assets/
+|  |- button_reward_claim.png
+|  |- icon_coin_gold.png
+|  `- panel_reward_bg.png
+`- reward_feature_doc.md
 
-2. Blueprint preparation
-   If the input is a standard blueprint, validate it.
-   If the input is a planning document, compile it into a candidate blueprint,
-   run governance checks, and admit only the validated version.
-
-3. Asset governance
-   Parse component asset names, infer category and role hints, generate
-   asset-manifest.json, and record ambiguous assets.
-
-4. UI perception
-   Detect visual nodes, bounding boxes, text, hierarchy candidates, visual type
-   candidates, and layer ordering from the full reference PNG.
-
-5. Semantic binding
-   Match visual nodes and assets to blueprint function nodes by multi-signal
-   scoring: filename tokens, OCR text, visual role, position, nearby context,
-   screen scope, and declared blueprint function.
-
-6. Canonical UI IR
-   Emit the governed intermediate representation that joins visual, asset,
-   semantic, layout, state, and Unity projection truth.
-
-7. UI reconstruction
-   Generate or patch Unity Canvas/Prefab through Unity Editor scripts,
-   not direct uncontrolled YAML edits.
-
-8. Visual validation
-   Capture Unity screenshots, export RectTransform probes, compare against
-   the reference PNG, and route failures to repair.
-
-9. Feature AutoDev
-   Generate Controller/ViewModel/event binding stubs, state transitions,
-   data-binding placeholders, and interaction tests from the admitted blueprint.
-
-10. Runtime validation
-    Run Unity compile, EditMode/PlayMode tests, interaction simulation, and
-    Console error scanning.
-
-11. Audit and admission
-    Emit evidence packs, ambiguity ledgers, manual override ledgers, patch
-    plans, visual diffs, test logs, and final pass/blocked/waived verdict.
+Hermes execution:
+1. compile reward_feature_doc.md into candidate blueprint
+2. admit the blueprint or emit ambiguity
+3. normalize assets into asset-manifest.json
+4. detect UI nodes from reward_screen.png
+5. bind claim button to reward.claim
+6. emit canonical-ui-ir.json
+7. build RewardScreen.prefab
+8. capture Unity screenshot and visual diff
+9. generate RewardController and binding stubs
+10. run compile/tests/probes
+11. emit admission-report.md
 ```
 
-## Required Authority Boundary
+## Evidence Pack
 
-The skill must preserve four truth layers:
+```text
+.hermes/evidence/<screen_id>/<run_id>/
+|- task-packet.json
+|- input-hashes.json
+|- admitted-screen-blueprint.json
+|- asset-manifest.json
+|- perception-report.json
+|- semantic-binding-report.json
+|- ambiguity-ledger.json
+|- canonical-ui-ir.json
+|- prefab-patch-plan.json
+|- prefab-patch-receipt.json
+|- rect-transform-probe.json
+|- screenshot-reference.png
+|- screenshot-generated.png
+|- visual-diff-report.json
+|- generated-code-manifest.json
+|- unity-compile.log
+|- editmode-tests.log
+|- playmode-tests.log
+|- manual-override-ledger.json
+|- repair-report.json
+`- admission-report.md
+```
 
-| Layer | Authority |
+## Authority Model
+
+| Truth Layer | Authority |
 | --- | --- |
 | Full UI reference PNG | Visual truth |
 | Component asset library | Asset truth |
-| Feature blueprint or admitted document-derived blueprint | Functional and semantic truth |
+| Admitted blueprint | Functional and semantic truth |
 | Unity Prefab and generated C# | Governed projection, valid only after verification |
 
-## Required Documentation
+## Repository Documents
 
-The full architecture and workflow specification is in:
+- [docs/architecture-and-workflow.md](docs/architecture-and-workflow.md): complete architecture, module contracts, governance model, and roadmap.
+- [docs/feature-workflows.md](docs/feature-workflows.md): per-feature workflow cards with inputs, steps, outputs, gates, and failure routing.
 
-- [docs/architecture-and-workflow.md](docs/architecture-and-workflow.md)
+## Implementation Roadmap
 
-## Initial Deliverable
+| Phase | Goal |
+| --- | --- |
+| Phase 0 | Publish architecture documents and schemas. |
+| Phase 1 | Repair current `v1.2`, sync blueprint, generate verified `v1.2 live`. |
+| Phase 2 | Generate child skill skeleton with task packet, evidence, UI IR, and patch schemas. |
+| Phase 3 | Implement document-to-blueprint, asset governance, perception, and semantic binding. |
+| Phase 4 | Implement Unity Prefab builder, screenshot/probe capture, and visual diff. |
+| Phase 5 | Implement feature AutoDev, Unity compile/test gates, audit, repair, and admission loop. |
 
-This repository currently defines the target architecture before the `v1.2 live` derivation step. Implementation should begin only after current `v1.2` is repaired, synchronized back to blueprint authority, and regenerated into a verified `v1.2 live` executor.
+## Success Criteria
+
+The first useful target is one complete screen:
+
+```text
+feature document + full-screen reference PNG + component assets
+-> admitted blueprint
+-> normalized asset manifest
+-> generated Unity Prefab
+-> generated feature-binding code
+-> visual diff pass
+-> Unity compile/test pass
+-> audit/admission report
+```
+
+The project is not considered complete until the workflow proves repeatable across multiple screens with manual override protection, repair routing, and no uncontrolled LLM file mutation.

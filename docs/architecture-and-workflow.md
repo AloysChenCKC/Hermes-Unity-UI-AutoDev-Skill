@@ -135,6 +135,8 @@ Hermes Unity UI AutoDev Skill
 `- evidence pack emitter
 ```
 
+For a feature-by-feature execution view, see [feature-workflows.md](feature-workflows.md). That document expands each capability into inputs, execution steps, outputs, governance gates, and failure routing.
+
 ## 6. Module Contracts
 
 ### 6.1 Skill Shell
