@@ -1,0 +1,7 @@
+.DS_Store
+.hermes/evidence/
+Library/
+Temp/
+Logs/
+obj/
+bin/
