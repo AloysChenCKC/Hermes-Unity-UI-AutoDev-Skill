@@ -170,6 +170,7 @@ Hermes execution:
 
 - [docs/architecture-and-workflow.md](docs/architecture-and-workflow.md): complete architecture, capability workflow cards, module contracts, governance model, and roadmap.
 - [docs/architecture-and-workflow.zh-CN.md](docs/architecture-and-workflow.zh-CN.md): Chinese version of the architecture, capability workflow cards, governance model, and roadmap.
+- [docs/plain-language-summary.zh-CN.md](docs/plain-language-summary.zh-CN.md): plain-language Chinese overview for readers who want the core idea, workflow, and governance boundary without implementation detail.
 
 ## Implementation Roadmap
 
